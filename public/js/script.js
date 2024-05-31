@@ -38,7 +38,7 @@ function initializeMap(imgUrl, scale) {
     zoomDelta: 0.5
   });
 
-  var bounds = [[0, 0], [1000, 1000]];
+  var bounds = [[0, 0], [1080, 1500]];
   var image = L.imageOverlay(imgUrl, bounds).addTo(map);
 
   map.fitBounds(bounds);
