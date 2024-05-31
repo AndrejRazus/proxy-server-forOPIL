@@ -164,7 +164,8 @@ function initializeMap(imgUrl, scale) {
 
     var totalDistancePixels = calculateTotalDistancePixels(route);
     var totalDistanceMeters = totalDistancePixels * scale;
-    document.getElementById('routeInfo').innerText = `Dĺžka trasy: ${totalDistanceMeters.toFixed(2)} metrov a (${totalDistancePixels.toFixed(2)} pixelov)`;
+    document.getElementById('routeInfo1').innerText = `Dĺžka trasy: ${totalDistanceMeters.toFixed(2)} metrov`;
+    document.getElementById('routeInfo2').innerText = `Dĺžka trasy: ${totalDistancePixels.toFixed(2)} pixelov`;
   });
 
   function snapToGrid(latlng, size) {
