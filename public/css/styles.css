@@ -1,0 +1,144 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #1A1737;
+  color: white;
+}
+
+h1 {
+  color: white;
+}
+
+#contentContainer {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+#map {
+  height: 800px;
+  width: 800px;
+  margin: 20px auto;
+  position: relative;
+}
+
+#topButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+#leftContainer, #rightContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px; 
+  margin-top: 40px;
+}
+
+#buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+button {
+  padding: 10px;
+  margin-top: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+button.active {
+  background-color: #f44336;
+  color: white;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; 
+  margin: 20px auto;
+}
+
+form label {
+  margin-right: 10px;
+}
+
+form input, form select {
+  margin-right: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  color: black;
+  outline: none;
+}
+
+form button {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: #45a049;
+}
+
+#result, #routeInfo {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+@media (max-width: 1200px) {
+  #contentContainer {
+    grid-template-columns: 1fr;
+  }
+
+  #map {
+    margin: 20px auto;
+  }
+
+  #leftContainer, #rightContainer {
+    align-self: center;
+  }
+
+  #buttonContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    justify-content: center;
+  }
+
+  form {
+    display: flex;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  form label, form input, form select {
+    margin-right: 0;
+  }
+}

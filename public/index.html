@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <title>Vypočet trasy</title>
+</head>
+<body>
+  <h1>Modulu pre vypočet trasy</h1>
+  <div id="topButtonContainer">
+    <button id="downloadMap">Stiahnuť mapu</button>
+  </div>
+  <div id="contentContainer">
+    <div id="leftContainer">
+      <div id="buttonContainer">
+        <button id="drawRoute">Kresliť trasu</button>
+        <button id="resetRoute">Resetovať kreslenie</button>
+        <button id="addStop">Pridať prestoj</button>
+        <button id="addRestrictedArea">Pridať zakázané pole</button>
+      </div>
+    </div>
+    <div id="map"></div>
+    <div id="rightContainer">
+      <form id="dataForm">
+        <label for="speed">Rýchlosť:</label>
+        <input type="number" id="speed" name="speed" step="0.1" required>
+        <select id="speedUnit" name="speedUnit">
+          <option value="m/s">m/s</option>
+          <option value="m/h">m/h</option>
+          <option value="km/h">km/h</option>
+        </select>
+        <label for="breakTime">Prestávky (sekundy):</label>
+        <input type="number" id="breakTime" name="breakTime" step="0.1" required>
+        <button type="submit">Vypočítať čas</button>
+      </form>
+      <p id="result"></p>
+      <p id="routeInfo"></p>
+    </div>
+  </div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="/js/script.js"></script>
+</body>
+</html>
