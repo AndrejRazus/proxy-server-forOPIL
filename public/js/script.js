@@ -1,3 +1,42 @@
+// Prekladova mapa
+const translations = {
+  en: {
+    title: "Agent Path Calculation",
+    downloadMap: "Download Map",
+    drawPath: "Draw Path",
+    finishDrawing: "Finish Drawing",
+    addDelay: "Add Delay",
+    addForbiddenZone: "Add Forbidden Zone",
+    resetDrawing: "Reset Drawing",
+    calculateTime: "Calculate Time",
+    totalTime: "Total round trip time (s):",
+    distanceM: "Path length (m):",
+    distancePx: "Path length (px):",
+    addStop: "Add Delay",
+    mainTitle: "Agent Path Calculation",
+    labelSpeed: "Speed:",
+    labelBreakTime: "Delays (seconds):"
+  },
+  sk: {
+    title: "Výpočet trasy agenta",
+    downloadMap: "Stiahnuť mapu",
+    drawPath: "Kresliť trasu",
+    finishDrawing: "Skončiť kreslenie",
+    addDelay: "Pridať prestoj",
+    addForbiddenZone: "Pridať zakázané pole",
+    resetDrawing: "Resetovať kreslenie",
+    calculateTime: "Vypočítať čas",
+    totalTime: "Celkový čas trasy (s):",
+    distanceM: "Dĺžka trasy (m):",
+    distancePx: "Dĺžka trasy (px):",
+    addStop: "Pridať prestoj",
+    mainTitle: "Výpočet trasy agenta",
+    labelSpeed: "Rýchlosť:",
+    labelBreakTime: "Prestávky (sekundy):"
+  }
+};
+
+//
 document.getElementById('downloadMap').addEventListener('click', function() {
   const targetUrl = 'http://localhost/api/fp';
 
@@ -10,13 +49,20 @@ document.getElementById('downloadMap').addEventListener('click', function() {
     if (xhr.status >= 200 && xhr.status < 300) {
       const data = JSON.parse(xhr.responseText);
       console.log(data);
-      if (data.length === 0) {
+      if (!Array.isArray(data) || data.length === 0) {
         console.error('No floorplans available');
         return;
       }
-      var imgurl = `http://localhost/${data[0].imgurl}`;
-      var scale = data[0].scale;
-      initializeMap(imgurl, scale);
+
+      // zober poslednu mapu podľa dátumu aktualizácie
+      const latest = data.sort((a, b) => new Date(a.updated) - new Date(b.updated)).pop();
+
+      const imgurl = `http://localhost/${latest.imgurl}`;
+      const scale = latest.scale;
+      const xoffset = latest.xoffset;
+      const yoffset = latest.yoffset;
+
+      initializeMap(imgurl, scale, xoffset, yoffset);
     } else {
       console.error('Request failed:', xhr.statusText);
     }
@@ -28,6 +74,15 @@ document.getElementById('downloadMap').addEventListener('click', function() {
 
   xhr.send();
 });
+function switchLanguage(lang) {
+  const elements = document.querySelectorAll('[data-key]');
+  elements.forEach(el => {
+    const key = el.getAttribute('data-key');
+    if (translations[lang] && translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+}
 
 function initializeMap(imgUrl, scale) {
   var map = L.map('map', {
@@ -38,7 +93,7 @@ function initializeMap(imgUrl, scale) {
     zoomDelta: 0.5
   });
 
-  var bounds = [[0, 0], [1080, 1500]];
+  var bounds = [[0, 0], [1024, 1024]];
   var image = L.imageOverlay(imgUrl, bounds).addTo(map);
 
   map.fitBounds(bounds);
@@ -53,10 +108,12 @@ function initializeMap(imgUrl, scale) {
   var restrictedAreas = [];
   var gridSize = 10;
 
-  document.getElementById('drawRoute').addEventListener('click', function() {
+  document.getElementById('drawRoute').addEventListener('click', function () {
     isDrawingRoute = !isDrawingRoute;
     this.classList.toggle('active');
-    this.textContent = isDrawingRoute ? 'Skončiť kreslenie' : 'Kresliť trasu';
+    this.textContent = isDrawingRoute
+      ? translations[window.currentLang].finishDrawing
+      : translations[window.currentLang].drawPath;
   });
 
   document.getElementById('resetRoute').addEventListener('click', function() {
@@ -71,22 +128,28 @@ function initializeMap(imgUrl, scale) {
     document.getElementById('routeInfo').innerText = '';
   });
 
-  document.getElementById('addStop').addEventListener('click', function() {
+  document.getElementById('addStop').addEventListener('click', function () {
     isAddingStop = true;
     isDrawingRoute = false;
     isAddingRestrictedArea = false;
+  
     document.getElementById('drawRoute').classList.remove('active');
-    document.getElementById('drawRoute').textContent = 'Kresliť trasu';
+    document.getElementById('drawRoute').textContent = translations[window.currentLang].drawPath;
   });
 
-  document.getElementById('addRestrictedArea').addEventListener('click', function() {
+  document.getElementById('addRestrictedArea').addEventListener('click', function () {
     isAddingRestrictedArea = !isAddingRestrictedArea;
     this.classList.toggle('active');
-    this.textContent = isAddingRestrictedArea ? 'Skončiť kreslenie  ' : 'Pridať zakázané pole';
+  
+    this.textContent = isAddingRestrictedArea
+      ? translations[window.currentLang].finishDrawing
+      : translations[window.currentLang].addForbiddenZone;
+  
     isDrawingRoute = false;
     isAddingStop = false;
+  
     document.getElementById('drawRoute').classList.remove('active');
-    document.getElementById('drawRoute').textContent = 'Kresliť trasu';
+    document.getElementById('drawRoute').textContent = translations[window.currentLang].drawPath;
   });
 
   var restrictedAreaStart = null;
@@ -102,7 +165,7 @@ function initializeMap(imgUrl, scale) {
       } else {
         isDrawingRoute = false;
         document.getElementById('drawRoute').classList.remove('active');
-        document.getElementById('drawRoute').textContent = 'Kresliť trasu';
+        document.getElementById('drawRoute').textContent = translations[window.currentLang].drawPath;
       }
     }
 
@@ -127,7 +190,8 @@ function initializeMap(imgUrl, scale) {
         restrictedAreaStart = null;
         isAddingRestrictedArea = false;
         document.getElementById('addRestrictedArea').classList.remove('active');
-        document.getElementById('addRestrictedArea').textContent = 'Pridať zakázané pole';
+        document.getElementById('addRestrictedArea').textContent = translations[window.currentLang].addForbiddenZone;
+
       }
     }
   });
@@ -160,12 +224,15 @@ function initializeMap(imgUrl, scale) {
     speed = convertSpeedToMetersPerSecond(speed, speedUnit);
 
     var totalTime = calculateTotalTime(route, stops, speed, breakTime, scale);
-    document.getElementById('result').innerText = `Celkový čas trasy: ${totalTime.toFixed(2)} sekúnd`;
+    document.getElementById('result').innerText =
+      `${translations[window.currentLang].totalTime} ${totalTime.toFixed(2)} s`;
 
     var totalDistancePixels = calculateTotalDistancePixels(route);
     var totalDistanceMeters = totalDistancePixels * scale;
-    document.getElementById('routeInfo1').innerText = `Dĺžka trasy: ${totalDistanceMeters.toFixed(2)} metrov`;
-    document.getElementById('routeInfo2').innerText = `Dĺžka trasy: ${totalDistancePixels.toFixed(2)} pixelov`;
+    document.getElementById('routeInfo1').innerText =
+      `${translations[window.currentLang].distanceM} ${totalDistanceMeters.toFixed(2)}`;
+    document.getElementById('routeInfo2').innerText =
+      `${translations[window.currentLang].distancePx} ${totalDistancePixels.toFixed(2)}`;
   });
 
   function snapToGrid(latlng, size) {
@@ -224,3 +291,71 @@ function initializeMap(imgUrl, scale) {
     polyline.setLatLngs([]);
   }
 }
+
+//Lokalizacia dyn. textov based on stav 
+function updateDynamicTexts(lang, state) {
+  const drawRouteBtn = document.getElementById('drawRoute');
+  const addRestrictedBtn = document.getElementById('addRestrictedArea');
+  const addStopBtn = document.getElementById('addStop');
+  const mainTitle = document.querySelector('[data-key="mainTitle"]');
+  const labelSpeed = document.querySelector('[data-key="labelSpeed"]');
+  const labelBreakTime = document.querySelector('[data-key="labelBreakTime"]');
+  const calcTimeBtn = document.querySelector('[data-key="calcTime"]');
+
+  if (drawRouteBtn) {
+    drawRouteBtn.textContent = state.isDrawingRoute
+      ? translations[lang].finishDrawing
+      : translations[lang].drawPath;
+  }
+
+  if (addRestrictedBtn) {
+    addRestrictedBtn.textContent = state.isAddingRestrictedArea
+      ? translations[lang].finishDrawing
+      : translations[lang].addForbiddenZone;
+  }
+
+  if (addStopBtn) {
+    addStopBtn.textContent = translations[lang].addStop;
+  }
+
+  if (mainTitle) {
+    mainTitle.textContent = translations[lang].mainTitle;
+  }
+
+  if (labelSpeed) {
+    labelSpeed.textContent = translations[lang].labelSpeed;
+  }
+
+  if (labelBreakTime) {
+    labelBreakTime.textContent = translations[lang].labelBreakTime;
+  }
+
+  if (calcTimeBtn) {
+    calcTimeBtn.textContent = translations[lang].calculateTime;
+  }
+}
+
+//Spusti lokalizaciu pri onload
+window.onload = () => {
+  switchLanguage('en');
+};
+
+//Funkcia na prepnutie jazyka a aktualizaciu textov
+function switchLanguage(lang) {
+  const elements = document.querySelectorAll('[data-key]');
+  elements.forEach(el => {
+    const key = el.getAttribute('data-key');
+    if (translations[lang] && translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+
+  updateDynamicTexts(lang, {
+    isDrawingRoute: document.getElementById('drawRoute')?.classList.contains('active'),
+    isAddingRestrictedArea: document.getElementById('addRestrictedArea')?.classList.contains('active')
+  });
+
+  window.currentLang = lang;
+}
+
+

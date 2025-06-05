@@ -3,7 +3,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const port = 3001;
 
-// Middleware na pridanie CORS hlavičiek
+// Middleware na pridanie CORS *
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -15,7 +15,7 @@ app.use((req, res, next) => {
   }
 });
 
-// Nastavenie statických súborov
+// Nastavenie static suborov
 app.use(express.static('public'));
 
 // Proxy middleware
@@ -31,7 +31,7 @@ app.use('/api', createProxyMiddleware({
     proxyRes.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization';
   },
   pathRewrite: {
-    '^/api': '', // Odstráni '/api' prefix
+    '^/api': '', //odstrani '/api' prefix
   },
 }));
 
